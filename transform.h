@@ -14,28 +14,28 @@ using namespace std;
 class mdtransform{
 	private:
 		enum{
-			maxLength	= 10000,
-			maxTag	= 20, 
+			maxLength		= 10000,
+			maxTag			= 20, 
 			nul			= 0,
-			paragraph	= 1,
-			href		= 2,
+			paragraph		= 1,
+			href			= 2,
 			ul			= 3,
 			ol			= 4,
 			li			= 5,
 			em			= 6,
-			strong		= 7,
+			strong			= 7,
 			hr			= 8,
 			br			= 9,
-			image		= 10,
-			quote		= 11,
+			image			= 10,
+			quote			= 11,
 			h1			= 12,
 			h2			= 13,
 			h3			= 14,
 			h4			= 15,
 			h5			= 16,
 			h6			= 17,
-			blockcode	= 18,
-			code		= 19
+			blockcode		= 18,
+			code			= 19
 		};
 
 		inline string convert(int x) {
@@ -101,24 +101,24 @@ class mdtransform{
 		/* TypeList: 
 		 * 0: null							|start
 		 * 1: <p>							|paragraph
-		 * 2: <a href=" ">...</a>			|hyperreference
+		 * 2: <a href=" ">...</a>					|hyperreference
 		 * 3: <ul>							|unordered list
 		 * 4: <ol>							|ordered list
 		 * 5: <li>							|list
 		 * 6: <em>							|emphasize
-		 * 7: <strong>						|strong
-		 * 8: <hr />						|cut=line
-		 * 9: <br />						|break
-		 * 10: <img alt="" src="" />		|image
-		 * 11: <blockquote>					|quote
+		 * 7: <strong>							|strong
+		 * 8: <hr />							|cut=line
+		 * 9: <br />							|break
+		 * 10: <img alt="" src="" />					|image
+		 * 11: <blockquote>						|quote
 		 * 12: <h1>							|h1							
 		 * 13: <h2>							|h2
 		 * 14: <h3>							|h3
 		 * 15: <h4>							|h4
 		 * 16: <h5>							|h5
 		 * 17: <h6>							|h6
-		 * 18: <pre><code>                  |blockcode
-		 * 19: <code>						|inlinecode
+		 * 18: <pre><code>                  				|blockcode
+		 * 19: <code>							|inlinecode
 		 */
 
 		string content, TOC;
