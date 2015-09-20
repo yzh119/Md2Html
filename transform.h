@@ -225,6 +225,14 @@ private:
 		return (cnt >= 3);
 	}
 	
+	inline void mkpara(node *v) {
+		if (!v->ch.empty() && v->ch.back()->type == paragraph) return;
+		node *x = new node(paragraph);
+		x->ch = v->ch;
+		v->ch.clear();
+		v->ch.push_back(x);
+	}
+
 	inline pair <int, char *> start(char *src) {
 		int n = (int)strlen(src);
 		if (n == 0) return make_pair(0, nullptr);
@@ -258,8 +266,8 @@ private:
 	inline node* findnode(int depth) {
 		node *ptr = root;
 		while (!ptr->ch.empty() && depth != 0) {
-			depth--;
 			ptr = ptr->ch.back();
+			if (ptr->type == li) depth--;
 		}
 		return ptr;
 	}
@@ -394,38 +402,52 @@ public:
 		Croot = new Cnode("");
 		root = new node(nul); now = root;	
 		ifstream fin(filename.c_str());
+		bool newpara = false;
 		while (!fin.eof()) {
-			fin.getline(s, maxLength);
+			fin.getline(s, maxLength);	
+
 			if (isCutline(s)) {
 				now = root;
 				now->ch.push_back(new node(hr));
+				newpara = false;
 				continue;
 			}
 			
 			pair <int, char *> ps = start(s);
 			if (ps.second == nullptr) {
 				now = root;
+				newpara = true;
 				continue;
 			}
 			
 			pair <int, char *> tj = JudgeType(ps.second);
+				
 			if (tj.first == paragraph) {
+				if (now == root) now = findnode(ps.first);
 				if (now == root) {
-					now->ch.push_back(new node(paragraph));	
+					now->ch.push_back(new node(paragraph));
+					now = now->ch.back();
+				}
+				bool flag = false;
+				if (newpara && !now->ch.empty()) /*mkpara(now->ch.back()),*/ flag = true;
+//printf("%s %d\n", tj.second, (now == root));
+				if (flag) {
+					now->ch.push_back(new node(paragraph));
 					now = now->ch.back();
 				}
 				now->ch.push_back(new node(nul));
 				insert(now->ch.back(), conver(tj.second));
+				newpara = false;
 				continue;
 			}	
-			now = findnode(ps.first);
 			
+			now = findnode(ps.first);
+				
 			if (tj.first >= h1 && tj.first <= h6) {
 				now->ch.push_back(new node(tj.first));
 				now->ch.back()->elem[0] = "tag" + convert(++cntTag);
 				insert(now->ch.back(), conver(tj.second));
 				Cins(Croot, tj.first - h1 + 1, conver(tj.second), cntTag);
-				continue;
 			}
 
 			if (tj.first == ul) {
@@ -433,8 +455,15 @@ public:
 					now->ch.push_back(new node(ul));
 				}
 				now = now->ch.back();
+				bool flag = false;
+				if (newpara && !now->ch.empty()) /*mkpara(now->ch.back()),*/ flag = true;
 				now->ch.push_back(new node(li));
-				insert(now->ch.back(), conver(tj.second));
+				now = now->ch.back();
+				if (flag) {
+					now->ch.push_back(new node(paragraph));
+					now = now->ch.back();
+				}
+				insert(now, conver(tj.second));
 			}
 
 			if (tj.first == ol) {
@@ -442,13 +471,26 @@ public:
 					now->ch.push_back(new node(ol));
 				}
 				now = now->ch.back();
+				bool flag = false;
+				if (newpara && !now->ch.empty()) /*mkpara(now->ch.back()),*/ flag = true;
 				now->ch.push_back(new node(li));
-				insert(now->ch.back(), conver(tj.second));
+				now = now->ch.back();
+				if (flag) {
+					now->ch.push_back(new node(paragraph));
+					now = now->ch.back();
+				}
+				insert(now, conver(tj.second));
 			}
 
 			if (tj.first == quote) {
-				
+				if (now->ch.empty() || now->ch.back()->type != quote) {
+					now->ch.push_back(new node(quote));
+				}	
+				now = now->ch.back();
+				if (newpara || now->ch.empty()) now->ch.push_back(new node(paragraph));
+				insert(now->ch.back(), conver(tj.second));
 			}
+			newpara = false;
 		}	
 		fin.close();
 
